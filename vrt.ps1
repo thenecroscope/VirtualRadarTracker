@@ -111,7 +111,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
         }
             
         Catch {
-            Write-Host "Error Response From Slack"
+            Write-Host "Error Response From Slack Or Slack Configuration Not Set In Config File"
             Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
             Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
         }
@@ -185,7 +185,18 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
             $payload = @{"channel" = $params.SLACKCHANNEL; "icon_emoji" = ":small_airplane:"; "text" = "MODEL:$aircraft_MODEL`n OPERATOR:$aircraft_OPERATOR2 || TYPE:$aircraft_TYPE || ICAO:$aircraft_ICAO || REG:$aircraft_REG `n $ImageLink || $FullLink || $LinkToSend_Bing || $LinkToSend_Maps || $FlightHistory `n $MYVIRTUALRADAR || $LinkToSend_OS || $LinkToSend_FR || $LinkToSend_FA || $LinkToSend_RB || $LinkToSend_PF `n ---------------------------------------------------------"                                        
             }
         
-            Invoke-WebRequest -Body (ConvertTo-Json -Compress -InputObject $payload) -Method Post -Uri $params.SLACKURL | Out-Null
+            try
+            {
+                Invoke-WebRequest -Body (ConvertTo-Json -Compress -InputObject $payload) -Method Post -Uri $params.SLACKURL | Out-Null
+            }
+
+            catch {
+                Write-Host "Error Response From Slack"
+                Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+                Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+            }
+
+
         }       
     }
 }
