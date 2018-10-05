@@ -44,7 +44,7 @@ chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1
 
 
 echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtMilitary.service
-echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vtrInteresting.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtInteresting.service
+echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtInteresting.service
 systemctl enable vrtMilitary.service
 systemctl enable vrtInteresting.service
 systemctl daemon-reload
