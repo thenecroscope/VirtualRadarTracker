@@ -34,17 +34,17 @@ chmod -R 777 /tmp/VirtualRadarTracker/
 chown -R nobody:nogroup /tmp/VirtualRadarTracker
 setfacl -d -m user:nobody:rw /tmp/VirtualRadarTracker/
 
-echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrt.ps1
-echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1 interesting' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1
+echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
+echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1 military' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
 echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtWorldWar.ps1
 echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1' worldwar| sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtWorldWar.ps1
-chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1
+chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
 chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtWorldWar.ps1
 
 
-echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtInteresting.service
+echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtMilitary.service
 echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vtrWorldWar.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtWorldWar.service
-systemctl enable vrtInteresting.service
+systemctl enable vrtMilitary.service
 systemctl enable vrtWorldWar.service
 systemctl daemon-reload
 
@@ -53,6 +53,6 @@ echo "---- Install Script Finsished ----"
 echo "----------------------------------"
 echo "Update Your Config Files HERE (cd $myhome/repos/VirtualRadarTracker/Configs)"
 echo "To start your services now run the following commands:"
-echo "sudo systemctl start vrtInteresting"
+echo "sudo systemctl start vrtMilitary"
 echo "sudo systemctl start vrtWorldWar"
 exit
