@@ -191,7 +191,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
 }
 
 
-function UpdateLocalIgnoreFile {
+function UpdateLocalIgnoreFile ($SendUpdateToSlack) {
     #Function to get a remote file if one exists and always overwrite on startup
     $fileName = $parameters.SHORTNAME + "_" + "ignorelist.csv"
 
@@ -241,12 +241,18 @@ function UpdateLocalIgnoreFile {
             #They do not match
             Write-Host " Updating Local Ignore List" -ForegroundColor Green
             $remoteIgnoreList | Export-Csv $LogsPath\$fileName -NoTypeInformation
-            $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
-            return $remoteIgnoreList
+                if ($SendUpdateToSlack -ne "TRUE"){
+                    return $localIgnoreList
+                }
+                else
+                {
+                    $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
+                    return $localIgnoreList
+            }
         }
     }
     else {
-        Write-Host "Failed To Find Valid Format in Ignore List" -ForegroundColor Red
+        Write-Host "Failed To Fetch Remote Ignore List or Find A Valid Format" -ForegroundColor Red
         try {
             $IgnoreListObjects = Import-Csv $LogsPath\$fileName
         }
@@ -424,7 +430,7 @@ $readIgnoreFileTimer = $false
 
 [PSCustomObject[]]$parameters = Parameters $PlaneFilter
 if ($parameters -eq "ERROR") {exit}
-$ignoreListObjects = UpdateLocalIgnoreFile; $ignoreListCount = $ignoreListObjects.count
+$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK); $ignoreListCount = $ignoreListObjects.count
 $slackResults = if ($parameters.SENDSLACK -eq "TRUE") {SendToSlack "StartUp" $parameters "*--------- Starting Up Monitoring, Ignore List: $($ignoreListObjects.count) ---------*"}
 
 # Main part of script ############################################
@@ -438,7 +444,7 @@ While ($true) {
     if ($parameters.SENDTWITTER -eq "TRUE") {SendToTwitter $aircraftsToSendArray $parameters}
     [int]$cacheCleanup = $($parameters.CACHECLEANUP)
     if ($cleanUpTimer.Elapsed.Minutes -ge $cacheCleanup) {ClearAirCraftSeenCache $cacheCleanup; $cleanUpTimer.Reset()}
-    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 5) {$ignoreListObjects = UpdateLocalIgnoreFile; $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
+    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 5) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK); $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
     Write-Host "Pausing For $($parameters.POLLPERIOD) Seconds Before Starting Next Iteration..."
     [int]$pollPeriod = $($parameters.POLLPERIOD)
     Start-Sleep $pollPeriod
