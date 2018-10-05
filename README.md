@@ -1,23 +1,17 @@
 # VirtualRadarTracker
-This a Powershell script to send notification to either Slack or Twitter, depending on which parameters within the configuration file.  
-The script works with Powershell 6.1 on both Windows and Ubuntu/Pi
-
-
+This a Powershell script to send notification to either Slack or Twitter, depending on which parameters are defined within the configuration file.  The script works with Powershell 6.1 on both Windows and Ubuntu/Pi
 
 ## Revisions
-v2 - Refactored, removed hardcoded values and all configuration is now managed by a single file
-v1 - First attempt at using PS and ADSBExchange, with hardcoded values
-
+* v2 - Refactored, removed hard coded values and all configuration is now managed by a single file
+* v1 - First attempt at using PS and ADSBExchange, with hardcoded values
 
 ## User Guide
-This script is designed to talk to the API service of a Virtual Radar instance, the script has been setup to use ADSBExchange.
-I have created 5 functions within the script that can easily be tweaked depending on the requirements.
+This script is designed to talk to the API service of a Virtual Radar instance, the script has been setup to use ADSBExchange. 
 
 
 ## Parameters
 ### The 1st parameter defines which configuration will be called when the script is run. Mandatory filed.
 The SHORTNAME in the config file is the value that is looked up with your config file for processing.
-
 
 
 ## Other Files
