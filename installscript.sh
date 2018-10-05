@@ -29,10 +29,9 @@ chmod -R 777 /opt/VirtualRadarTracker/ServiceStarters/
 chown -R nobody:nogroup /opt/VirtualRadarTracker/ServiceStarters/
 setfacl -d -m user:nobody:rw /opt/VirtualRadarTracker/ServiceStarters/
 
-mkdir /tmp/VirtualRadarTracker -p
-chmod -R 777 /tmp/VirtualRadarTracker/
-chown -R nobody:nogroup /tmp/VirtualRadarTracker
-setfacl -d -m user:nobody:rw /tmp/VirtualRadarTracker/
+chmod -R 777 $myhome/repos/VirtualRadarTracker/
+chown -R nobody:nogroup $myhome/repos/VirtualRadarTracker/
+setfacl -d -m user:nobody:rw $myhome/repos/VirtualRadarTracker/
 
 echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
 echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1 military' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
