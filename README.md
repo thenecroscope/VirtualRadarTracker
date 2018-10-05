@@ -1,19 +1,12 @@
 # VirtualRadarTracker
-This a Powershell script to send notification to either Slack or Twitter, depending on which parameters are supplied.  
+This a Powershell script to send notification to either Slack or Twitter, depending on which parameters within the configuration file.  
 The script works with Powershell 6.1 on both Windows and Ubuntu/Pi
 
 
 
 ## Revisions
-
-* Changed the ignore files to ignore both a Type of aircraft and also now a specific ICAO value
-* Created un/install script for Pi 
-* Bug fixes for not reading external file correctly
-* Added a method to update the ignored plane list from a URL. The URL is then read in occasionally to update the local ignore list. This allows updating the ignore list from my phone when I'm not near a PC.
-* Updated README to include 1st draft script to install as a service on Linux
-* Corrected minor bug where first loop would not pick up any values. Made some changes to enable working on Ubuntu (tested on 18.04/Powershell Core)
-* Bug fixes and updating documentation
-* Initial Commit of PS Flight Tracker
+v2 - Refactored, removed hardcoded values and all configuration is now managed by a single file
+v1 - First attempt at using PS and ADSBExchange, with hardcoded values
 
 
 ## User Guide
@@ -22,40 +15,22 @@ I have created 5 functions within the script that can easily be tweaked dependin
 
 
 ## Parameters
-### The 1st parameter defines which function will be called within the script. Options are as follows:
+### The 1st parameter defines which configuration will be called when the script is run. Mandatory filed.
+The SHORTNAME in the config file is the value that is looked up with your config file for processing.
 
-* emergency (looks for any flights with ($_.Sqk -eq 7500 -or $_.Sqk -eq 7700 -or $_.help -eq $TRUE ) within the British Isles
-* interesting (looks for flights that have been set as interesting  within the British Isles.
-* local (looks for local flights only. Up to 6km range from the point that has been defined MyLocation.csv file)
-* worldwar (Looks for spitfires, hurricanes and Lancasters within the British Isles)
-* military (Looks for any flights that have been clasified as military within the British Isles)
-
-
-### The 2nd Parameter defines which communication channel to use, options are:
-* Slack (Will send all notifications to Slack. The channels names are the same as the 1st parameter options.
-* Twitter (Will send all notifications to Twitter)
-* [Not stated] (This will only log all the flights found to a csv file)
-
-### The 3rd Parameter if set, will download your ignore files from a remote cloud location
-* Remote  
-Leaving this blank will not download any files
 
 
 ## Other Files
-* MyLocation.csv (A simple text file that has your Long and Lat details. Only used for the local parameter)
-* Slack.csv (A simple text file where to store your Slack API channel details)
-* Twitter.csv ((A simple text file where to store your Twitter API channel details)
-* IgnorePlanesURL.csv (A simple text file to store your URLs to download ignore files)
+configs/configs.csv
+This file define all the configuration details for the call to your VirtualRadar Service
 
 ## Examples
 ### Windows Examples
-.\AircraftAlerts.ps1 military Slack
-.\AircraftAlerts.ps1 local Twitter
-.\AircraftAlerts.ps1 emergency
+.\vrt.ps1 military
 
 
 ### Linux Examples
-./AircraftAlerts.ps1 military Slack & (This will start the process as a background job)
+./vrt.ps1 military & (This will start the process as a background job)
  
 
 ## Installing on Linux
