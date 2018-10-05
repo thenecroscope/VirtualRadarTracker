@@ -12,7 +12,7 @@ Function WatchAircraft ($PlaneFilter, $CommsChannel, $SourceFileLocation) {
         New-Item -path $IgnorePlaneListPath | Out-Null
     }
     else {
-        $IgnorePlaneLists = Get-Content $IgnorePlaneListPath
+        $IgnorePlaneLists = Import-Csv $IgnorePlaneListPath
     }
 
     $CleanUpCounter = 1
@@ -241,9 +241,10 @@ Function WatchAircraft ($PlaneFilter, $CommsChannel, $SourceFileLocation) {
                         
                         $ADDAIRCRAFT | Export-Csv -NoTypeInformation -Append $LogsPath
                         $Notify = ""
+
                         #If the Aircraft is in this list, ignore sending it as not interested. We will export it to a file for stats above though
                         ForEach ($IgnorePlane in $IgnorePlaneLists) {
-                            If ($ADDAIRCRAFT.TYPE -eq $IgnorePlane) {
+                            If ( ($ADDAIRCRAFT.TYPE -eq $IgnorePlane.Type) -or ($ADDAIRCRAFT.ICAO -eq $IgnorePlane.ICAO) ) {
                                 Write-Host "Not Sending Notification For Model:"$($ADDAIRCRAFT.MDL) -ForegroundColor Yellow
                                 $Notify = "DoNotSend"
                                 Break

@@ -1,35 +1,24 @@
 # VirtualRadarTracker
-Powershell script to send notification to either Slack or Twitter, depending on which parameter is supplied.  
+This a Powershell script to send notification to either Slack or Twitter, depending on which parameters are supplied.  
 The script works with Powershell 6.1 on both Windows and Ubuntu/Pi
 
 
 
 ## Revisions
 
-02/10/18
+* Changed the ignore files to ignore both a Type of aircraft and also now a specific ICAO value
 * Created un/install script for Pi 
-
-31/09/18
 * Bug fixes for not reading external file correctly
-
-30/09/18
-* Added a method to update the ignored plane list from a URL. The URL is then read in occasionally to update the ignore list. 
-
-29/09/18
+* Added a method to update the ignored plane list from a URL. The URL is then read in occasionally to update the local ignore list. This allows updating the ignore list from my phone when I'm not near a PC.
 * Updated README to include 1st draft script to install as a service on Linux
-* Corrected minor bug where first loop would not pick up any values
-
-28/09/18
-* Made some changes to enable working on Ubuntu (tested on 18.04/Powershell Core)
+* Corrected minor bug where first loop would not pick up any values. Made some changes to enable working on Ubuntu (tested on 18.04/Powershell Core)
 * Bug fixes and updating documentation
-
-27/09/18
 * Initial Commit of PS Flight Tracker
 
 
 ## User Guide
 This script is designed to talk to the API service of a Virtual Radar instance, the script has been setup to use ADSBExchange.
-I have created 5 functions within the script that can easily be tweaked to your needs.
+I have created 5 functions within the script that can easily be tweaked depending on the requirements.
 
 
 ## Parameters
