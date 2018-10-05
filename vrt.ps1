@@ -111,7 +111,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
         }
             
         Catch {
-            Write-Host "Error Response From ADSB Exchange"
+            Write-Host "Error Response From Slack"
             Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
             Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
         }
@@ -205,8 +205,16 @@ function UpdateLocalIgnoreFile {
     }
 
     catch {
-        Write-Host "Failed To Fetch Remote ignore list" -ForegroundColor Red
-        Write-Host "Failed To Fetch Remote Ignore List or Find A Valid Format" -ForegroundColor Red
+        Write-Host "Failed To Fetch Remote Ignore List" -ForegroundColor Red
+        try {
+            $localIgnoreList = Import-Csv $LogsPath\$fileName 
+        }
+        catch {
+            return 0
+        }
+
+            #As the local count matches we will not export it
+            return $localIgnoreList
     }
     
     if (($remoteIgnoreListString -match "ValueType") -eq $true) {
@@ -238,7 +246,7 @@ function UpdateLocalIgnoreFile {
         }
     }
     else {
-        Write-Host "Failed To Fetch Remote Ignore List or Find A Valid Format" -ForegroundColor Red
+        Write-Host "Failed To Find Valid Format in Ignore List" -ForegroundColor Red
         try {
             $IgnoreListObjects = Import-Csv $LogsPath\$fileName
         }
@@ -417,7 +425,7 @@ $readIgnoreFileTimer = $false
 [PSCustomObject[]]$parameters = Parameters $PlaneFilter
 if ($parameters -eq "ERROR") {exit}
 $ignoreListObjects = UpdateLocalIgnoreFile; $ignoreListCount = $ignoreListObjects.count
-$slackResults = SendToSlack "StartUp" $parameters "*--------- Starting Up Monitoring, Ignore List: $($ignoreListObjects.count) ---------*"
+$slackResults = if ($parameters.SENDSLACK -eq "TRUE") {SendToSlack "StartUp" $parameters "*--------- Starting Up Monitoring, Ignore List: $($ignoreListObjects.count) ---------*"}
 
 # Main part of script ############################################
 # Setup Environment for the for loop to process
