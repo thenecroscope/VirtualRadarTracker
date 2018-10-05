@@ -24,6 +24,26 @@ The SHORTNAME in the config file is the value that is looked up with your config
 configs/configs.csv
 This file define all the configuration details for the call to your VirtualRadar Service
 
+## config.csv
+SHORTNAME,This is what is called as a parameter
+SLACKCHANNEL,Name of the slack channel (need to include the #)
+ADSBAPIQUERY,The VR API query
+PSEXCLUDEQUERY,Exclude entries returned from the query. (Need to include {})
+FREQUENCY,How oftent the script will run
+SENDSLACK,Set this to TRUE if you want to send your alerts
+SENDTWITTER,Set this to TRUE if you want to send your alerts	
+REMOTEIGNORELOCATION,The Onedrive remote location for your ignore files
+SLACKURL,Slack API URL
+LAT,Latitude (not currently used)
+LONG,Longitude (not currently used)	
+RANGE,Range for the API called (not currently used)
+TWITTERCOSUMBERKEY,	Your Twitter details
+TWITTERCONSUMBERSECRET,	Your Twitter details
+TWITTERTOKEN,Your Twitter details
+TWITTERTOKENSECRET,	Your Twitter details
+POLLPERIOD,Your Twitter details
+CACHECLEANUP,Your Twitter details
+
 ## Examples
 ### Windows Examples
 .\vrt.ps1 military
