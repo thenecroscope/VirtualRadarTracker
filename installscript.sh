@@ -29,22 +29,24 @@ chmod -R 777 /opt/VirtualRadarTracker/ServiceStarters/
 chown -R nobody:nogroup /opt/VirtualRadarTracker/ServiceStarters/
 setfacl -d -m user:nobody:rw /opt/VirtualRadarTracker/ServiceStarters/
 
-chmod -R 777 $myhome/repos/VirtualRadarTracker/
-chown -R nobody:nogroup $myhome/repos/VirtualRadarTracker/
-setfacl -d -m user:nobody:rw $myhome/repos/VirtualRadarTracker/
+chmod -R 777 $myhome/repos/VirtualRadarTracker/logs
+chown -R nobody:nogroup $myhome/repos/VirtualRadarTracker/logs
+setfacl -d -m user:nobody:rw $myhome/repos/VirtualRadarTracker/logs
 
 echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
 echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1 military' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
-echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtWorldWar.ps1
-echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1' worldwar| sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtWorldWar.ps1
+
+echo -e '#!/usr/bin/env pwsh' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1
+echo -e $myhome'/repos/VirtualRadarTracker/vrt.ps1 interesting' | sudo tee --append /opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1
+
 chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1
-chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtWorldWar.ps1
+chmod +x /opt/VirtualRadarTracker/ServiceStarters/vrtInteresting.ps1
 
 
 echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vrtMilitary.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtMilitary.service
-echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vtrWorldWar.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtWorldWar.service
+echo -e "[Service]\nExecStart=/opt/VirtualRadarTracker/ServiceStarters/vtrInteresting.ps1\n[Install]\nWantedBy=default.target" | sudo tee --append /etc/systemd/system/vrtInteresting.service
 systemctl enable vrtMilitary.service
-systemctl enable vrtWorldWar.service
+systemctl enable vrtInteresting.service
 systemctl daemon-reload
 
 echo "----------------------------------"
@@ -53,5 +55,5 @@ echo "----------------------------------"
 echo "Update Your Config Files HERE (cd $myhome/repos/VirtualRadarTracker/Configs)"
 echo "To start your services now run the following commands:"
 echo "sudo systemctl start vrtMilitary"
-echo "sudo systemctl start vrtWorldWar"
+echo "sudo systemctl start vrtInteresting"
 exit
