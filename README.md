@@ -95,4 +95,4 @@ military,https://onedrive.live.com/download?cid=XXXXXXXXXXXXXXXx&resid=XXXXXXXXX
 
 
 ## Updating to the latest version
-* Simply run ```git update``` from the folder were you installed the application
+* Simply run ```sudo git pull``` from the folder were you installed the application
