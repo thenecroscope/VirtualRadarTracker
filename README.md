@@ -71,7 +71,7 @@ sudo bash -c "$(wget -O - https://raw.githubusercontent.com/thenecroscope/Virtua
 
 ## Setting Up Slack ##
 * Create an account with Slack
-* Go to https://gajek.slack.com/apps/manage/custom-integrations
+* Go to https://[username].slack.com/apps/manage/custom-integrations
 * Add a custom webhook
 * Make a note of your "Webhook URL" i.e. "https://hooks.slack.com/services/XXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXX"
 * Paste your code into Security/Slack.csv i.e. "XXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXX"
