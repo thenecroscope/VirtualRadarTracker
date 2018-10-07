@@ -159,7 +159,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
             $aircraft_INREQUEST_MAP = $aircraft.ICAO
             $LinkToSend_Maps = "<http://www.bing.com/maps/?v=2&cp=$lat~$long&lvl=10&dir=0&sty=r&sp=point." + $lat + "_" + $long + "_" + $aircraft_MODEL_MAP + $aircraft_OPERATOR + "_" + $aircraft_INREQUEST_MAP + "|Bing Maps>"
             $FlightHistory = "<https://flight-data.adsbexchange.com/activity?inputSelect=icao&icao=" + $aircraft_ICAO2 + "|Logs>"
-            $MYVIRTUALRADAR = "<http://vr1.westeurope.cloudapp.azure.com/virtualradar/desktop.html?icao=" + $aircraft_ICAO2 + "|MYVR>"
+            $MYVIRTUALRADAR = "<http://www.virtualradaruk.com/virtualradar/desktop.html?icao=" + $aircraft_ICAO2 + "|VRS>"
         
             #Grab a thumbnail
             try {
