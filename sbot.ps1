@@ -118,7 +118,10 @@ Function Service-Action ($words, $channel)
 
 Function IgnoreList-Action  ($words, $channel)
 {
-    if($words[0] -eq "list")
+    $fullwords = $words
+    $words = $words -split ' '
+
+    if($words.StartsWith("list"))
     {
          if ($words[1] -eq "military")
          {
@@ -142,7 +145,7 @@ Function IgnoreList-Action  ($words, $channel)
          }
     }
    
-    elseif($words[0] -eq "add")
+    elseif($words.StartsWith("add"))
     {
          if ($words[1] -eq "military")
          {
@@ -191,7 +194,7 @@ Function IgnoreList-Action  ($words, $channel)
     }
 
 
-    elseif($words[0] -eq "remove")
+    elseif($words.StartsWith("remove"))
     {
          if ($words[1] -eq "military")
          {
