@@ -1,4 +1,5 @@
-﻿Param(
+﻿[cmdletbinding()]
+Param(
     [parameter(Mandatory = $true, ValueFromPipeline = $true)] $PlaneFilter
 )
 
