@@ -129,16 +129,15 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
             Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
             Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
         }
-        return $slackResult
-    }
+      }
     ElseIf ($action -eq "AircraftsToSend") {    
         ForEach ($aircraft in $aircraftsToSend) {  
             # Define text to send to Slack
-            $LinkToSend_OS = "<https://opensky-network.org/network/explorer?icao24=" + $ADDAIRCRAFT.ICAO + "|OS>"
-            $LinkToSend_FR = "<https://www.flightradar24.com/" + $ADDAIRCRAFT.CALL + "|FR>"
-            $LinkToSend_FA = "<https://flightaware.com/live/flight/" + $ADDAIRCRAFT.CALL + "|FA>"
-            $LinkToSend_RB = "<https://www.radarbox24.com/flight/" + $ADDAIRCRAFT.CALL + "|RB>"
-            $LinkToSend_PF = "<https://planefinder.net/flight/" + $ADDAIRCRAFT.CALL + "|PF>"
+            $LinkToSend_OS = "<https://opensky-network.org/network/explorer?icao24=" + $aircraft.ICAO + "|OS>"
+            $LinkToSend_FR = "<https://www.flightradar24.com/" + $aircraft.CALL + "|FR>"
+            $LinkToSend_FA = "<https://flightaware.com/live/flight/" + $aircraft.CALL + "|FA>"
+            $LinkToSend_RB = "<https://www.radarbox24.com/flight/" + $aircraft.CALL + "|RB>"
+            $LinkToSend_PF = "<https://planefinder.net/flight/" + $aircraft.CALL + "|PF>"
             #$LinkToSend_Maps  = "https://maps.google.com/?q=$lat,$long&ll=$lat,$long&z=12"
 
             $lat = ($aircraft).Lat
@@ -259,7 +258,7 @@ function UpdateLocalIgnoreFile ($SendUpdateToSlack) {
                 else
                 {
                     $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
-                    return $localIgnoreList
+                    return $remoteIgnoreList
             }
         }
     }
@@ -423,7 +422,7 @@ function ClearAirCraftSeenCache ($Duration) {
             }
         }
     }
-}###Needs testing (need to define time variable (i.e. 20)
+}
 
 
 # Setup environment/variables ####################################

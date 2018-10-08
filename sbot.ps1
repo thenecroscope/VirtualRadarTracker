@@ -34,8 +34,7 @@
 
 Function Service-Action ($words, $channel)
 {
-    if ($words[0] -eq "service")
-        {
+    $words = $words -split ' '
             if ($words[1] -eq "stop")
                 {
                     if ($words[2] -eq "interesting")
@@ -59,7 +58,6 @@ Function Service-Action ($words, $channel)
                         systemctl stop vrtWorldWar.service
                         Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                     }
-                }
             
 
 
@@ -118,6 +116,161 @@ Function Service-Action ($words, $channel)
         }
 }
 
+Function IgnoreList-Action  ($words, $channel)
+{
+    if($words[0] -eq "list")
+    {
+         if ($words[1] -eq "military")
+         {
+                    [string]$list = Import-Csv $LogsPath\"military_ignorelist.csv" | Out-String
+                    Send-SlackMsg -Text $list -Channel $RTM.Channel
+         }
+         elseif ($words[1] -eq "interesting")
+         {
+                    [string]$list = Import-Csv $LogsPath\"interesting_ignorelist.csv" | Out-String
+                    Send-SlackMsg -Text $list -Channel $RTM.Channel
+         }
+         elseif ($words[1] -eq "worldwar")
+         {
+                    [string]$list = Import-Csv $LogsPath\"worldwar_ignorelist.csv" | Out-String
+                    Send-SlackMsg -Text $list -Channel $RTM.Channel
+         }
+         elseif ($words[1] -eq "local")
+         {
+                    [string]$list = Import-Csv $LogsPath\"local_ignorelist.csv" | Out-String
+                    Send-SlackMsg -Text $list -Channel $RTM.Channel
+         }
+    }
+   
+    elseif($words[0] -eq "add")
+    {
+         if ($words[1] -eq "military")
+         {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"military_ignorelist.csv"
+            $obj = New-Object -TypeName PSCustomObject
+		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
+		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
+            $list += $obj
+            $list | Export-Csv $LogsPath\"military_ignorelist.csv" -Force -NoTypeInformation
+            $tot = $list.count
+            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+        }
+        elseif($words[1] -eq "interesting")
+        {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"interesting_ignorelist.csv"
+            $obj = New-Object -TypeName PSCustomObject
+		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
+		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
+            $list += $obj
+            $list | Export-Csv $LogsPath\"interesting_ignorelist.csv" -Force -NoTypeInformation
+            $tot = $list.count
+            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel 
+       }
+        elseif($words[1] -eq "worldwar")
+        {
+           [PSCustomObject[]]$list = Import-Csv $LogsPath\"worldwar_ignorelist.csv"
+            $obj = New-Object -TypeName PSCustomObject
+		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
+		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
+            $list += $obj
+            $list | Export-Csv $LogsPath\"worldwar_ignorelist.csv" -Force -NoTypeInformation
+            $tot = $list.count
+            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel 
+        }
+        elseif($words[1] -eq "local")
+        {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"local_ignorelist.csv"
+            $obj = New-Object -TypeName PSCustomObject
+		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
+		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
+            $list += $obj
+            $list | Export-Csv $LogsPath\"local_ignorelist.csv" -Force -NoTypeInformation
+            $tot = $list.count
+            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel 
+        }
+    }
+
+
+    elseif($words[0] -eq "remove")
+    {
+         if ($words[1] -eq "military")
+         {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"military_ignorelist.csv"
+            [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[3].ToUpper())}
+                
+                if ($listFind.count -eq 1 )
+                {
+                    [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
+                    $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"military_ignorelist.csv" -Force -NoTypeInformation
+                    $tot = $list.count
+                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+
+                }
+                else #not in list
+                {
+                    Write-Host "Value is not in the list"
+                }
+         }
+         elseif ($words[1] -eq "interesting")
+         {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"interesting_ignorelist.csv"
+            [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[3].ToUpper())}
+                
+                if ($listFind.count -eq 1 )
+                {
+                    [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
+                    $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"interesting_ignorelist.csv" -Force -NoTypeInformation
+                    $tot = $list.count
+                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+
+                }
+                else #not in list
+                {
+                    Write-Host "Value is not in the list"
+                }
+         }
+         elseif ($words[1] -eq "worldwar")
+         {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"worldwar_ignorelist.csv"
+            [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[3].ToUpper())}
+                
+                if ($listFind.count -eq 1 )
+                {
+                    [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
+                    $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"worldwar_ignorelist.csv" -Force -NoTypeInformation
+                    $tot = $list.count
+                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+
+                }
+                else #not in list
+                {
+                    Write-Host "Value is not in the list"
+                }
+         }
+         elseif ($words[1] -eq "local")
+         {
+            [PSCustomObject[]]$list = Import-Csv $LogsPath\"local_ignorelist.csv"
+            [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[3].ToUpper())}
+                
+                if ($listFind.count -eq 1 )
+                {
+                    [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
+                    $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"local_ignorelist.csv" -Force -NoTypeInformation
+                    $tot = $list.count
+                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+
+                }
+                else #not in list
+                {
+                    Write-Host "Value is not in the list"
+                }
+         }
+    }
+}
+
+
+
+
 Function Invoke-SlackBot {
     [cmdletbinding()]
     Param(
@@ -153,24 +306,32 @@ Function Invoke-SlackBot {
                 } Until ($Conn.Result.Count -lt $Size)
 
                 If ($RTM){
+                try{
                     $RTM = ($RTM | convertfrom-json) 
+                }
+                Catch
+                {
+                    Write-Host "Catch bad json string"
+                }
 
                     Switch ($RTM){
                         {($_.type -eq 'message')} { 
 
                                 $words = "$($_.text)".ToLower()
-                                $words = $words -split ' '
+                                #$words = $words -split ' '
                                 
                                 Switch ($words){
-                                    {@("hey","hello","hi") -contains $_} { Send-SlackMsg -Text 'Hello!' -Channel $RTM.Channel }
-                                    {@("bye","cya") -contains $_} { Send-SlackMsg -Text 'Goodbye!' -Channel $RTM.Channel }
-                                    {@("service") -contains $_} { Service-Action $words $RTM.Channel }
-
+                                    {$words.StartsWith("service")} { Service-Action $words $RTM.Channel }
+                                    {$words.StartsWith("list")}    { IgnoreList-Action $words $RTM.Channel }
+                                    {$words.StartsWith("add")}     { IgnoreList-Action $words $RTM.Channel }
+                                    {$words.StartsWith("remove")}   { IgnoreList-Action $words $RTM.Channel }
                                 }
                         }
                         {$_.type -eq 'reconnect_url'} { $RTMSession.URL = $RTM.url }
                     }
+                
                 }
+
             }   
         } Until (!$Conn)
 
@@ -197,3 +358,4 @@ $workingDir = $workingDir -replace ("\\", "/") #for linux
 $LogsPath = $workingDir + "/logs"
 $configsPath = $workingDir + "/configs"
 $parameter = Get-Content $configsPath/slackbot.csv
+Invoke-SlackBot
