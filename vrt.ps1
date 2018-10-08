@@ -246,14 +246,14 @@ function UpdateLocalIgnoreFile ($SendUpdateToSlack) {
 
         if ($localIgnoreList.count -eq $remoteIgnoreList.count) {
             #As the local count matches we will not export it
-            return $remoteIgnoreList
+            return $localIgnoreList
         }
         else {
             #They do not match
             Write-Host " Updating Local Ignore List" -ForegroundColor Green
             $remoteIgnoreList | Export-Csv $LogsPath\$fileName -NoTypeInformation
                 if ($SendUpdateToSlack -ne "TRUE"){
-                    return $localIgnoreList
+                    return $remoteIgnoreList
                 }
                 else
                 {
@@ -409,7 +409,6 @@ function SendRequestToVRS ($parameters, $IgnoreListObjects) {
 }
 
 
-
 function ClearAirCraftSeenCache ($Duration) {
     If (($global:aircraftArray).count -ge 1) {
         Write-Host " Cleaning out stale aircraft from array"
@@ -455,7 +454,7 @@ While ($true) {
     if ($parameters.SENDTWITTER -eq "TRUE") {SendToTwitter $aircraftsToSendArray $parameters}
     [int]$cacheCleanup = $($parameters.CACHECLEANUP)
     if ($cleanUpTimer.Elapsed.Minutes -ge $cacheCleanup) {ClearAirCraftSeenCache $cacheCleanup; $cleanUpTimer.Reset()}
-    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 5) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK); $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
+    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 30) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK); $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
     Write-Host "Pausing For $($parameters.POLLPERIOD) Seconds Before Starting Next Iteration..."
     [int]$pollPeriod = $($parameters.POLLPERIOD)
     Start-Sleep $pollPeriod
