@@ -17,6 +17,8 @@ cd repos
 git clone https://github.com/thenecroscope/VirtualRadarTracker.git
 cd $myhome/repos/VirtualRadarTracker/
 git update-index --assume-unchanged configs/configs.csv
+git update-index --assume-unchanged configs/slackbot.csv
+
 
 sudo bash -c "$(wget -O - https://raw.githubusercontent.com/thenecroscope/VirtualRadarTracker/master/InstallScript.sh)"
 
