@@ -59,7 +59,7 @@ Function Service-Action ($words, $channel)
                         Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                     }
             
-
+            }
 
             elseif($words[1] -eq "restart")
             {
@@ -109,8 +109,8 @@ Function Service-Action ($words, $channel)
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                 }
             }
-        }
 }
+
 
 Function IgnoreList-Action  ($words, $channel)
 {
