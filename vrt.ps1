@@ -133,12 +133,13 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
     ElseIf ($action -eq "AircraftsToSend") {    
         ForEach ($aircraft in $aircraftsToSend) {  
             # Define text to send to Slack
-            $LinkToSend_OS = "<https://opensky-network.org/network/explorer?icao24=" + $aircraft.ICAO + "|OS>"
-            $LinkToSend_FR = "<https://www.flightradar24.com/" + $aircraft.CALL + "|FR>"
-            $LinkToSend_FA = "<https://flightaware.com/live/flight/" + $aircraft.CALL + "|FA>"
-            $LinkToSend_RB = "<https://www.radarbox24.com/flight/" + $aircraft.CALL + "|RB>"
-            $LinkToSend_PF = "<https://planefinder.net/flight/" + $aircraft.CALL + "|PF>"
-            #$LinkToSend_Maps  = "https://maps.google.com/?q=$lat,$long&ll=$lat,$long&z=12"
+            $LinkToSend_OS    = "<https://opensky-network.org/network/explorer?icao24=" + $aircraft.ICAO + "|OS>"
+            $LinkToSend_FR    = "<https://www.flightradar24.com/" + $aircraft.CALL + "|FR>"
+            $LinkToSend_FA    = "<https://flightaware.com/live/flight/" + $aircraft.CALL + "|FA>"
+            $LinkToSend_RB    = "<https://www.radarbox24.com/flight/" + $aircraft.CALL + "|RB>"
+            $LinkToSend_PF    = "<https://planefinder.net/flight/" + $aircraft.CALL + "|PF>"
+            $LinkToSend_AVD   = "<https://www.avdelphi.com/track.html?icao="+ $aircraft.ICAO + "|AVD>"
+            #$LinkToSend_Maps = "https://maps.google.com/?q=$lat,$long&ll=$lat,$long&z=12"
 
             $lat = ($aircraft).Lat
             $long = ($aircraft).Long
@@ -182,7 +183,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
                 $FullLink = ""
             }
                   
-            $payload = @{"channel" = $params.SLACKCHANNEL; "icon_emoji" = ":small_airplane:"; "text" = "MODEL:$aircraft_MODEL`n OPERATOR:$aircraft_OPERATOR2 || TYPE:$aircraft_TYPE || ICAO:$aircraft_ICAO || REG:$aircraft_REG `n $ImageLink || $FullLink || $LinkToSend_Bing || $LinkToSend_Maps || $FlightHistory `n $MYVIRTUALRADAR || $LinkToSend_OS || $LinkToSend_FR || $LinkToSend_FA || $LinkToSend_RB || $LinkToSend_PF `n ---------------------------------------------------------"                                        
+            $payload = @{"channel" = $params.SLACKCHANNEL; "icon_emoji" = ":small_airplane:"; "text" = "MODEL:$aircraft_MODEL`n OPERATOR:$aircraft_OPERATOR2 || TYPE:$aircraft_TYPE || ICAO:$aircraft_ICAO || REG:$aircraft_REG `n $ImageLink || $FullLink || $LinkToSend_Bing || $LinkToSend_Maps || $FlightHistory `n $LinkToSend_AVD ||   $MYVIRTUALRADAR || $LinkToSend_OS || $LinkToSend_FR || $LinkToSend_FA || $LinkToSend_RB || $LinkToSend_PF `n ---------------------------------------------------------"                                        
             }
         
             try

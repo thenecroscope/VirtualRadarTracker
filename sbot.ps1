@@ -121,7 +121,7 @@ Function IgnoreList-Action  ($words, $channel)
     $fullwords = $words
     $words = $words -split ' '
 
-    if($words.StartsWith("list"))
+    if($words[0].StartsWith("list"))
     {
          if ($words[1] -eq "military")
          {
@@ -145,56 +145,96 @@ Function IgnoreList-Action  ($words, $channel)
          }
     }
    
-    elseif($words.StartsWith("add"))
+    elseif($words[0].StartsWith("add"))
     {
          if ($words[1] -eq "military")
          {
-            [PSCustomObject[]]$list = Import-Csv $LogsPath\"military_ignorelist.csv"
-            $obj = New-Object -TypeName PSCustomObject
-		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
-		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
-            $list += $obj
-            $list | Export-Csv $LogsPath\"military_ignorelist.csv" -Force -NoTypeInformation
-            $tot = $list.count
-            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+            if ($words[2] -eq "ICAO" -or $words[2] -eq "TYPE")
+            {
+                [PSCustomObject[]]$list = Import-Csv $LogsPath\"military_ignorelist.csv"
+
+                $comments = $words[4..99] -join " " #construct comments
+                $obj = New-Object -TypeName PSCustomObject
+		        $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[2].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Comments -Value $comments
+                $list += $obj
+                $list | Export-Csv $LogsPath\"military_ignorelist.csv" -Force -NoTypeInformation
+                $tot = $list.count
+                Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+            }
+            else
+            {
+                Send-SlackMsg -Text "*Cannot Add, Invalid Type Entered*" -Channel $RTM.Channel
+            }            
         }
         elseif($words[1] -eq "interesting")
         {
-            [PSCustomObject[]]$list = Import-Csv $LogsPath\"interesting_ignorelist.csv"
-            $obj = New-Object -TypeName PSCustomObject
-		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
-		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
-            $list += $obj
-            $list | Export-Csv $LogsPath\"interesting_ignorelist.csv" -Force -NoTypeInformation
-            $tot = $list.count
-            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel 
-       }
+            if ($words[2] -eq "ICAO" -or $words[2] -eq "TYPE")
+            {
+                [PSCustomObject[]]$list = Import-Csv $LogsPath\"interesting_ignorelist.csv"
+
+                $comments = $words[4..99] -join " " #construct comments
+                $obj = New-Object -TypeName PSCustomObject
+		        $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[2].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Comments -Value $comments
+                $list += $obj
+                $list | Export-Csv $LogsPath\"interesting_ignorelist.csv" -Force -NoTypeInformation
+                $tot = $list.count
+                Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+            }
+            else
+            {
+                Send-SlackMsg -Text "*Cannot Add, Invalid Type Entered*" -Channel $RTM.Channel
+            }       
+        }
         elseif($words[1] -eq "worldwar")
         {
-           [PSCustomObject[]]$list = Import-Csv $LogsPath\"worldwar_ignorelist.csv"
-            $obj = New-Object -TypeName PSCustomObject
-		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
-		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
-            $list += $obj
-            $list | Export-Csv $LogsPath\"worldwar_ignorelist.csv" -Force -NoTypeInformation
-            $tot = $list.count
-            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel 
+            if ($words[2] -eq "ICAO" -or $words[2] -eq "TYPE")
+            {
+                [PSCustomObject[]]$list = Import-Csv $LogsPath\"worldwar_ignorelist.csv"
+
+                $comments = $words[4..99] -join " " #construct comments
+                $obj = New-Object -TypeName PSCustomObject
+		        $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[2].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Comments -Value $comments
+                $list += $obj
+                $list | Export-Csv $LogsPath\"worldwar_ignorelist.csv" -Force -NoTypeInformation
+                $tot = $list.count
+                Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+            }
+            else
+            {
+                Send-SlackMsg -Text "*Cannot Add, Invalid Type Entered*" -Channel $RTM.Channel
+            }        
         }
         elseif($words[1] -eq "local")
         {
-            [PSCustomObject[]]$list = Import-Csv $LogsPath\"local_ignorelist.csv"
-            $obj = New-Object -TypeName PSCustomObject
-		    $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[3].ToUpper()
-		    $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[2].ToUpper()
-            $list += $obj
-            $list | Export-Csv $LogsPath\"local_ignorelist.csv" -Force -NoTypeInformation
-            $tot = $list.count
-            Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel 
+            if ($words[2] -eq "ICAO" -or $words[2] -eq "TYPE")
+            {
+                [PSCustomObject[]]$list = Import-Csv $LogsPath\"local_ignorelist.csv"
+
+                $comments = $words[4..99] -join " " #construct comments
+                $obj = New-Object -TypeName PSCustomObject
+		        $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[2].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
+		        $obj | Add-Member -MemberType NoteProperty -Name Comments -Value $comments
+                $list += $obj
+                $list | Export-Csv $LogsPath\"local_ignorelist.csv" -Force -NoTypeInformation
+                $tot = $list.count
+                Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
+            }
+            else
+            {
+                Send-SlackMsg -Text "*Cannot Add, Invalid Type Entered*" -Channel $RTM.Channel
+            }        
         }
     }
 
 
-    elseif($words.StartsWith("remove"))
+    elseif($words[0].StartsWith("remove"))
     {
          if ($words[1] -eq "military")
          {
@@ -206,12 +246,11 @@ Function IgnoreList-Action  ($words, $channel)
                     [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
                     $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"military_ignorelist.csv" -Force -NoTypeInformation
                     $tot = $list.count
-                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
-
+                    Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
                 }
                 else #not in list
                 {
-                    Write-Host "Value is not in the list"
+                    Write-Host "Cannnot Find Value, Unable To Remove"
                 }
          }
          elseif ($words[1] -eq "interesting")
@@ -224,8 +263,7 @@ Function IgnoreList-Action  ($words, $channel)
                     [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
                     $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"interesting_ignorelist.csv" -Force -NoTypeInformation
                     $tot = $list.count
-                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
-
+                    Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
                 }
                 else #not in list
                 {
@@ -242,8 +280,7 @@ Function IgnoreList-Action  ($words, $channel)
                     [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
                     $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"worldwar_ignorelist.csv" -Force -NoTypeInformation
                     $tot = $list.count
-                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
-
+                    Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
                 }
                 else #not in list
                 {
@@ -260,8 +297,7 @@ Function IgnoreList-Action  ($words, $channel)
                     [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
                     $list | Sort-Object Value, ValueType | Export-Csv $LogsPath\"local_ignorelist.csv" -Force -NoTypeInformation
                     $tot = $list.count
-                    Send-SlackMsg -Text "Item Removed, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
-
+                    Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
                 }
                 else #not in list
                 {
@@ -270,8 +306,6 @@ Function IgnoreList-Action  ($words, $channel)
          }
     }
 }
-
-
 
 
 Function Invoke-SlackBot {
