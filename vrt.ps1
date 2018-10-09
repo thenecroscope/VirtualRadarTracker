@@ -203,7 +203,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
 }
 
 
-function UpdateLocalIgnoreFile ($SendUpdateToSlack, $params) {
+function UpdateLocalIgnoreFile ($SendUpdateToSlack, $params, $action) {
     #Function to get a remote file if one exists and always overwrite on startup
     $fileName = $parameters.SHORTNAME + "_" + "ignorelist.csv"
 
@@ -292,9 +292,12 @@ function UpdateLocalIgnoreFile ($SendUpdateToSlack, $params) {
             }
             else
             {
-                $ignoreListCount = $localIgnoreList.count
-                $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
-                return $localIgnoreList
+                if ($action -eq "STARTUP")
+                {
+                    $ignoreListCount = $localIgnoreList.count
+                    $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
+                    return $localIgnoreList
+                }
             }
     
     }
@@ -467,7 +470,7 @@ $readIgnoreFileTimer = $false
 
 [PSCustomObject[]]$parameters = Parameters $PlaneFilter
 if ($parameters -eq "ERROR") {exit}
-$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK) $parameters; $ignoreListCount = $ignoreListObjects.count
+$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK) $parameters "StartUp"; $ignoreListCount = $ignoreListObjects.count
 $slackResults = if ($parameters.SENDSLACK -eq "TRUE") {SendToSlack "StartUp" $parameters "*--------- Starting Up Monitoring, Ignore List: $($ignoreListObjects.count) ---------*"}
 
 # Main part of script ############################################
@@ -481,7 +484,7 @@ While ($true) {
     if ($parameters.SENDTWITTER -eq "TRUE") {SendToTwitter $aircraftsToSendArray $parameters}
     [int]$cacheCleanup = $($parameters.CACHECLEANUP)
     if ($cleanUpTimer.Elapsed.Minutes -ge $cacheCleanup) {ClearAirCraftSeenCache $cacheCleanup; $cleanUpTimer.Reset()}
-    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 30) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK) $parameters; $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
+    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 30) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK) $parameters "Update"; $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
     Write-Host "Pausing For $($parameters.POLLPERIOD) Seconds Before Starting Next Iteration..."
     [int]$pollPeriod = $($parameters.POLLPERIOD)
     Start-Sleep $pollPeriod
