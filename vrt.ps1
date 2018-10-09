@@ -203,77 +203,103 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
 }
 
 
-function UpdateLocalIgnoreFile ($SendUpdateToSlack) {
+function UpdateLocalIgnoreFile ($SendUpdateToSlack, $params) {
     #Function to get a remote file if one exists and always overwrite on startup
     $fileName = $parameters.SHORTNAME + "_" + "ignorelist.csv"
 
-    #1, Check to see if a remote file exists
-    #2, Check to see if local file exists
-    #3, If local file exists and it matches remote do not overwrite or update 
+    If ($params.REMOTEIGNORELOCATION -ne "")
+    { 
+        #1, Check to see if a remote file exists
+        #2, Check to see if local file exists
+        #3, If local file exists and it matches remote do not overwrite or update 
 
-    #Check to see if remote file exists                           
-    try {
-        $remoteIgnoreListString = Invoke-RestMethod $parameters.REMOTEIGNORELOCATION
-    }
-
-    catch {
-        Write-Host "Failed To Fetch Remote Ignore List" -ForegroundColor Red
+        #Check to see if remote file exists                           
         try {
-            $localIgnoreList = Import-Csv $LogsPath\$fileName 
+            $remoteIgnoreListString = Invoke-RestMethod $parameters.REMOTEIGNORELOCATION
         }
+
         catch {
-            return 0
+            Write-Host "Failed To Fetch Remote Ignore List" -ForegroundColor Red
+            try {
+                $localIgnoreList = Import-Csv $LogsPath\$fileName 
+            }
+            catch {
+                return 0
+            }
+
+                #As the local count matches we will not export it
+                return $localIgnoreList
         }
-
-            #As the local count matches we will not export it
-            return $localIgnoreList
-    }
-    
-    if (($remoteIgnoreListString -match "ValueType") -eq $true) {
-        #Export the string to a temp file,import it as an object and delete temp file
-        $tempFile = (Get-Date).ticks
-        $remoteIgnoreListString | Out-File ./$tempfile
-        $remoteIgnoreList = Import-Csv ./$tempfile
-        Remove-Item ./$tempfile
-
         
-        #Try and Import the existing local file
-        try {
-            $localIgnoreList = Import-Csv $LogsPath\$fileName 
-        }
-        catch {
-            #local file does not exists, supress error if not exist
-        }
+        if (($remoteIgnoreListString -match "ValueType") -eq $true) {
+            #Export the string to a temp file,import it as an object and delete temp file
+            $tempFile = (Get-Date).ticks
+            $remoteIgnoreListString | Out-File ./$tempfile
+            $remoteIgnoreList = Import-Csv ./$tempfile
+            Remove-Item ./$tempfile
 
-        if ($localIgnoreList.count -eq $remoteIgnoreList.count) {
-            #As the local count matches we will not export it
-            return $localIgnoreList
-        }
-        else {
-            #They do not match
-            Write-Host " Updating Local Ignore List" -ForegroundColor Green
-            $remoteIgnoreList | Export-Csv $LogsPath\$fileName -NoTypeInformation
-                if ($SendUpdateToSlack -ne "TRUE"){
-                    return $remoteIgnoreList
+            
+            #Try and Import the existing local file
+            try {
+                $localIgnoreList = Import-Csv $LogsPath\$fileName 
+            }
+            catch {
+                #local file does not exists, supress error if not exist
+            }
+
+            if ($localIgnoreList.count -eq $remoteIgnoreList.count) {
+                #As the local count matches we will not export it
+                return $localIgnoreList
+            }
+            else {
+                #They do not match
+                Write-Host " Updating Local Ignore List" -ForegroundColor Green
+                $remoteIgnoreList | Export-Csv $LogsPath\$fileName -NoTypeInformation
+                    if ($SendUpdateToSlack -ne "TRUE"){
+                        return $remoteIgnoreList
+                    }
+                    else
+                    {
+                        $ignoreListCount = $remoteIgnoreList.count
+                        $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
+                        return $remoteIgnoreList
                 }
-                else
-                {
-                    $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
-                    return $remoteIgnoreList
             }
         }
+        else {
+            Write-Host "Failed To Fetch Remote Ignore List or Find A Valid Format" -ForegroundColor Red
+            try {
+                $IgnoreListObjects = Import-Csv $LogsPath\$fileName
+            }
+            catch {
+                Write-Host " No Local Ignore File Exists" -ForegroundColor Magenta
+            }
+            return $IgnoreListObjects
+        }
     }
-    else {
-        Write-Host "Failed To Fetch Remote Ignore List or Find A Valid Format" -ForegroundColor Red
-        try {
-            $IgnoreListObjects = Import-Csv $LogsPath\$fileName
-        }
-        catch {
-            Write-Host " No Local Ignore File Exists" -ForegroundColor Magenta
-        }
-        return $IgnoreListObjects
+    else
+    {
+
+            try {
+                $localIgnoreList = Import-Csv $LogsPath\$fileName 
+            }
+            catch {
+                return 0
+            }
+
+            if ($SendUpdateToSlack -ne "TRUE"){
+                        return $localIgnoreList
+            }
+            else
+            {
+                $ignoreListCount = $localIgnoreList.count
+                $slackResults = SendToSlack "UpdateIgnoreList" $parameters "*UPDATED IGNORE LIST: $ignoreListCount  ------*"
+                return $localIgnoreList
+            }
+    
     }
 }
+
 ###############################
 
 
@@ -441,7 +467,7 @@ $readIgnoreFileTimer = $false
 
 [PSCustomObject[]]$parameters = Parameters $PlaneFilter
 if ($parameters -eq "ERROR") {exit}
-$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK); $ignoreListCount = $ignoreListObjects.count
+$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK) $parameters; $ignoreListCount = $ignoreListObjects.count
 $slackResults = if ($parameters.SENDSLACK -eq "TRUE") {SendToSlack "StartUp" $parameters "*--------- Starting Up Monitoring, Ignore List: $($ignoreListObjects.count) ---------*"}
 
 # Main part of script ############################################
@@ -455,7 +481,7 @@ While ($true) {
     if ($parameters.SENDTWITTER -eq "TRUE") {SendToTwitter $aircraftsToSendArray $parameters}
     [int]$cacheCleanup = $($parameters.CACHECLEANUP)
     if ($cleanUpTimer.Elapsed.Minutes -ge $cacheCleanup) {ClearAirCraftSeenCache $cacheCleanup; $cleanUpTimer.Reset()}
-    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 30) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK); $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
+    if ($readIgnoreFileTimer.Elapsed.Minutes -ge 30) {$ignoreListObjects = UpdateLocalIgnoreFile $($parameters.SENDSLACK) $parameters; $ignoreListCount = $ignoreListObjects.count; $readIgnoreFileTimer.Reset()}
     Write-Host "Pausing For $($parameters.POLLPERIOD) Seconds Before Starting Next Iteration..."
     [int]$pollPeriod = $($parameters.POLLPERIOD)
     Start-Sleep $pollPeriod
