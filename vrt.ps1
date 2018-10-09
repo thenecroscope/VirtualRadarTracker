@@ -183,7 +183,7 @@ function SendToSlack($action, $params, $textToSend, $aircraftsToSend) {
                 $FullLink = ""
             }
                   
-            $payload = @{"channel" = $params.SLACKCHANNEL; "icon_emoji" = ":small_airplane:"; "text" = "MODEL:$aircraft_MODEL`n OPERATOR:$aircraft_OPERATOR2 || TYPE:$aircraft_TYPE || ICAO:$aircraft_ICAO || REG:$aircraft_REG `n $ImageLink || $FullLink || $LinkToSend_Bing || $LinkToSend_Maps || $FlightHistory `n $LinkToSend_AVD ||   $MYVIRTUALRADAR || $LinkToSend_OS || $LinkToSend_FR || $LinkToSend_FA || $LinkToSend_RB || $LinkToSend_PF `n ---------------------------------------------------------"                                        
+            $payload = @{"channel" = $params.SLACKCHANNEL; "icon_emoji" = ":small_airplane:"; "text" = "MODEL:$aircraft_MODEL`n OPERATOR:$aircraft_OPERATOR2 || TYPE:$aircraft_TYPE || ICAO:$aircraft_ICAO || REG:$aircraft_REG `n $ImageLink || $FullLink || $LinkToSend_Bing || $LinkToSend_Maps || $FlightHistory `n $LinkToSend_AVD || $MYVIRTUALRADAR || $LinkToSend_OS || $LinkToSend_FR || $LinkToSend_FA || $LinkToSend_RB || $LinkToSend_PF `n ---------------------------------------------------------"                                        
             }
         
             try

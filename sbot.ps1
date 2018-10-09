@@ -39,23 +39,23 @@ Function Service-Action ($words, $channel)
                 {
                     if ($words[2] -eq "interesting")
                     {
-                        systemctl stop vrtInteresting.service
+                        sudo systemctl stop vrtInteresting.service
                         Send-SlackMsg -Text "$words[1] $words[2]" -Channel $RTM.Channel
                     }
                     elseif ($words[2] -eq "military")
                     {
-                        systemctl stop vrtMilitary.service
+                        sudo systemctl stop vrtMilitary.service
                         Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                     }
                     elseif ($words[2] -eq "local")
                     {
-                        systemctl stop vrtLocaly.service
+                        sudo  systemctl stop vrtLocaly.service
                         Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
 
                     }
                     elseif ($words[2] -eq "worldwar")
                     {
-                        systemctl stop vrtWorldWar.service
+                        sudo systemctl stop vrtWorldWar.service
                         Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                     }
             
@@ -65,22 +65,22 @@ Function Service-Action ($words, $channel)
             {
                 if ($words[2] -eq "interesting")
                 {
-                    systemctl restart vrtInteresting.service
+                    sudo systemctl restart vrtInteresting.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                 }
                 elseif ($words[2] -eq "military")
                 {
-                    systemctl restart vrtMilitary.service
+                    sudo systemctl restart vrtMilitary.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
               }
                 elseif ($words[2] -eq "local")
                 {
-                    systemctl restart vrtLocaly.service
+                    sudo systemctl restart vrtLocaly.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                 }
                 elseif ($words[2] -eq "worldwar")
                 {
-                    systemctl restart vrtWorldWar.service
+                    sudo systemctl restart vrtWorldWar.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                 }
             }
@@ -89,28 +89,24 @@ Function Service-Action ($words, $channel)
             {
                 if ($words[2] -eq "interesting")
                 {
-                    systemctl start vrtInteresting.service
+                    sudo systemctl start vrtInteresting.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
 
                 }
                 elseif ($words[2] -eq "military")
                 {
-                    systemctl start vrtMilitary.service
+                    sudo systemctl start vrtMilitary.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                 }
                 elseif ($words[2] -eq "local")
                 {
-                    systemctl start vrtLocaly.service
+                    sudo systemctl start vrtLocaly.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
                 }
                 elseif ($words[2] -eq "worldwar")
                 {
-                    systemctl start vrtWorldWar.service
+                    sudo systemctl start vrtWorldWar.service
                     Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
-                else
-                {
-
                 }
             }
         }
