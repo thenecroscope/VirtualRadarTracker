@@ -61,12 +61,23 @@ Function Service-Action ($words, $channel, $slackApiKey) {
     If ($validRoom -eq $true) {
         $words = $words -split ' '
 
-        if ($words[2] -eq "stop" -or $words[2] -eq "start") {
+        if ($words[2] -eq "stop" -or $words[2] -eq "start" -or $words[2] -eq "restart") {
             $TextInfo = (Get-Culture).TextInfo
             $PascalCase = $TextInfo.ToTitleCase($words[1])
-            $cmd = "sudo systemctl $($words[2]) vrt$PascalCase.service"
-            Invoke-Expression $cmd
-            Send-SlackMsg -Text "Attempting to $($words[2]) the $($words[1]) service" -Channel $RTM.Channel
+            if ($words[2] -eq "restart")
+            {
+                $cmd = "sudo systemctl stop vrt$PascalCase.service"
+                Invoke-Expression $cmd
+                Sleep 1
+                $cmd = "sudo systemctl start vrt$PascalCase.service"
+                Invoke-Expression $cmd
+                Send-SlackMsg -Text "Attempting to $($words[2]) the $($words[1]) service" -Channel $RTM.Channel
+            }
+            else{
+                $cmd = "sudo systemctl $($words[2]) vrt$PascalCase.service"
+                Invoke-Expression $cmd
+                Send-SlackMsg -Text "Attempting to $($words[2]) the $($words[1]) service" -Channel $RTM.Channel
+            }
         }
     }
     elseif ($validRoom -eq $true) {
