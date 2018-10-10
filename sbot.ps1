@@ -105,7 +105,7 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
                 $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
                 $obj | Add-Member -MemberType NoteProperty -Name Comments -Value $comments
                 $list += $obj
-                $list | Export-Csv $importString -Force -NoTypeInformation
+                $list | Sort-Object Value, ValueType| Export-Csv $importString -Force -NoTypeInformation
                 $tot = $list.count
                 Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
             }
@@ -118,10 +118,10 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
         elseif ($fullwords.StartsWith("remove")) {
             $importString = "$LogsPath/$($words[1])_ignorelist.csv"
             [PSCustomObject[]]$list = Import-Csv $importString
-            [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[3].ToUpper())}
+            [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[2].ToUpper())}
                 
             if ($listFind.count -eq 1 ) {
-                [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[3].ToUpper()}
+                [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[2].ToUpper()}
                 $list | Sort-Object Value, ValueType | Export-Csv $importString -Force -NoTypeInformation
                 $tot = $list.count
                 Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
