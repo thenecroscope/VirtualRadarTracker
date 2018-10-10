@@ -61,20 +61,13 @@ Function Service-Action ($words, $channel, $slackApiKey) {
     If ($validRoom -eq $true) {
         $words = $words -split ' '
 
-        if ($words[2] -eq "stop") {
+        if ($words[2] -eq "stop" -or $words[2] -eq "start") {
             $TextInfo = (Get-Culture).TextInfo
             $PascalCase = $TextInfo.ToTitleCase($words[1])
-            $cmd = "sudo systemctl stop vrt$PascalCase.service"
+            $cmd = "sudo systemctl $words[2] vrt$PascalCase.service"
             Invoke-Expression $cmd
-            Send-SlackMsg -Text "Attempting To $($words[1]) $($words[2]) service" -Channel $RTM.Channel
+            Send-SlackMsg -Text "Attempting To $($words[2]) $($words[2]) service" -Channel $RTM.Channel
         }
-        elseif ($words[2] -eq "start") {
-            $TextInfo = (Get-Culture).TextInfo
-            $PascalCase = $TextInfo.ToTitleCase($words[1])
-            $cmd = "sudo systemctl start vrt$PascalCase.service"
-            Invoke-Expression $cmd
-            Send-SlackMsg -Text "Attempting To $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-        }        
     }
     elseif ($validRoom -eq $true) {
         Send-SlackMsg -Text "Slack Channel Is Not Valid Try Again" -Channel $RTM.Channel
@@ -82,10 +75,7 @@ Function Service-Action ($words, $channel, $slackApiKey) {
     else {
         Send-SlackMsg -Text "An Error Occured When Processing Service Command" -Channel $RTM.Channel
     }
-
-
 }
-
 
 Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
     $fullwords = $words
@@ -144,9 +134,6 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
     }
 }
     
-
-
-
 Function Invoke-SlackBot {
     [cmdletbinding()]
     Param(
