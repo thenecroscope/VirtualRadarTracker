@@ -63,14 +63,14 @@ Function Service-Action ($words, $channel, $slackApiKey) {
 
         if ($words[2] -eq "stop") {
             $TextInfo = (Get-Culture).TextInfo
-            $PascalCase = $TextInfo.ToTitleCase($words[2])
+            $PascalCase = $TextInfo.ToTitleCase($words[1])
             $cmd = "sudo systemctl stop vrt$PascalCase.service"
             Invoke-Expression $cmd
             Send-SlackMsg -Text "Attempting To $($words[1]) $($words[2]) service" -Channel $RTM.Channel
         }
         elseif ($words[2] -eq "start") {
             $TextInfo = (Get-Culture).TextInfo
-            $PascalCase = $TextInfo.ToTitleCase($words[2])
+            $PascalCase = $TextInfo.ToTitleCase($words[1])
             $cmd = "sudo systemctl start vrt$PascalCase.service"
             Invoke-Expression $cmd
             Send-SlackMsg -Text "Attempting To $($words[1]) $($words[2]) service" -Channel $RTM.Channel
