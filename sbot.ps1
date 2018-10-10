@@ -6,7 +6,7 @@
 
     $body = @{"token" = $slackApiKey}
     $getRooms = Invoke-RestMethod -Uri "https://slack.com/api/channels.list" -Body $body
-    $rooms = $rooms.channels
+    $rooms = $getrooms.channels
 
     ForEach ($room in $rooms) 
     {
@@ -72,7 +72,7 @@ Function Service-Action ($words, $channel, $slackApiKey)
                     $PascalCase = $TextInfo.ToTitleCase($words[2])
                     $cmd = "sudo systemctl stop vrt$PascalCase.service"
                     Invoke-Expression $cmd
-                    Send-SlackMsg -Text "Attempting To $words[1] $words[2] service" -Channel $RTM.Channel
+                    Send-SlackMsg -Text "Attempting To $($words[1]) $($words[2]) service" -Channel $RTM.Channel
             }
             elseif($words[1] -eq "start")
             {
@@ -80,7 +80,7 @@ Function Service-Action ($words, $channel, $slackApiKey)
                     $PascalCase = $TextInfo.ToTitleCase($words[2])
                     $cmd = "sudo systemctl start vrt$PascalCase.service"
                     Invoke-Expression $cmd
-                    Send-SlackMsg -Text "Attempting To $words[1] $words[2] service" -Channel $RTM.Channel
+                    Send-SlackMsg -Text "Attempting To $($words[1]) $($words[2]) service" -Channel $RTM.Channel
             }        
 }
 elseif ($validRoom -eq $true)
@@ -316,7 +316,7 @@ Function Invoke-SlackBot {
 
                 Do {
                     $Conn = $WS.ReceiveAsync($Recv, $CT)
-                    While (!$Conn.IsCompleted) { Start-Sleep -Milliseconds 100 }
+                    While (!$Conn.IsCompleted) { Start-Sleep -Milliseconds 1000 }
 
                     $Recv.Array[0..($Conn.Result.Count - 1)] | ForEach-Object { $RTM = $RTM + [char]$_ }
 
