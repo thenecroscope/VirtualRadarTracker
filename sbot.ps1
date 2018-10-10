@@ -68,7 +68,6 @@ Function Service-Action ($words, $channel, $slackApiKey) {
             {
                 $cmd = "sudo systemctl stop vrt$PascalCase.service"
                 Invoke-Expression $cmd
-                Sleep 1
                 $cmd = "sudo systemctl start vrt$PascalCase.service"
                 Invoke-Expression $cmd
                 Send-SlackMsg -Text "Attempting to $($words[2]) the $($words[1]) service" -Channel $RTM.Channel
