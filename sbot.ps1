@@ -1,4 +1,29 @@
-﻿Function Send-SlackMsg {
+﻿Function Get-SlackRooms ($words, $channels, $slackApiKey) {
+
+    $roomFound = ""
+    $words = $words -split ' '
+    $channelName = $words[2]
+
+    $body = @{"token" = $slackApiKey}
+    $getRooms = Invoke-RestMethod -Uri "https://slack.com/api/channels.list" -Body $body
+    $rooms = $rooms.channels
+
+    ForEach ($room in $rooms) 
+    {
+        if ($room.name -eq "flight_"+$channelName)
+        {
+            $roomFound = $true
+            return $roomFound
+        }
+        else
+        {
+            $roomFound = $false
+        }
+        
+    }
+}
+
+Function Send-SlackMsg {
     [cmdletbinding()]
     Param(
         [Parameter(Mandatory=$true)][string]$Text,        
@@ -32,83 +57,42 @@
    
 }
 
-Function Service-Action ($words, $channel)
+Function Service-Action ($words, $channel, $slackApiKey)
 {
+    #check if channel is a valid channel
+    $validRoom = Get-SlackRooms $words $channel $slackApiKey
+
+    If ($validRoom -eq $true)
+    {
     $words = $words -split ' '
+
             if ($words[1] -eq "stop")
-                {
-                    if ($words[2] -eq "interesting")
-                    {
-                        sudo systemctl stop vrtInteresting.service
-                        Send-SlackMsg -Text "$words[1] $words[2]" -Channel $RTM.Channel
-                    }
-                    elseif ($words[2] -eq "military")
-                    {
-                        sudo systemctl stop vrtMilitary.service
-                        Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                    }
-                    elseif ($words[2] -eq "local")
-                    {
-                        sudo  systemctl stop vrtLocaly.service
-                        Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-
-                    }
-                    elseif ($words[2] -eq "worldwar")
-                    {
-                        sudo systemctl stop vrtWorldWar.service
-                        Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                    }
-            
-            }
-
-            elseif($words[1] -eq "restart")
             {
-                if ($words[2] -eq "interesting")
-                {
-                    sudo systemctl restart vrtInteresting.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
-                elseif ($words[2] -eq "military")
-                {
-                    sudo systemctl restart vrtMilitary.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-              }
-                elseif ($words[2] -eq "local")
-                {
-                    sudo systemctl restart vrtLocaly.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
-                elseif ($words[2] -eq "worldwar")
-                {
-                    sudo systemctl restart vrtWorldWar.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
+                    $TextInfo = (Get-Culture).TextInfo
+                    $PascalCase = $TextInfo.ToTitleCase($words[2])
+                    $cmd = "sudo systemctl stop vrt$PascalCase.service"
+                    Invoke-Expression $cmd
+                    Send-SlackMsg -Text "Attempting To $words[1] $words[2] service" -Channel $RTM.Channel
             }
-            
             elseif($words[1] -eq "start")
             {
-                if ($words[2] -eq "interesting")
-                {
-                    sudo systemctl start vrtInteresting.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
+                    $TextInfo = (Get-Culture).TextInfo
+                    $PascalCase = $TextInfo.ToTitleCase($words[2])
+                    $cmd = "sudo systemctl start vrt$PascalCase.service"
+                    Invoke-Expression $cmd
+                    Send-SlackMsg -Text "Attempting To $words[1] $words[2] service" -Channel $RTM.Channel
+            }        
+}
+elseif ($validRoom -eq $true)
+{
+                    Send-SlackMsg -Text "Slack Channel Is Not Valid Try Again" -Channel $RTM.Channel
+}
+else
+{
+                    Send-SlackMsg -Text "An Error Occured When Processing Service Command" -Channel $RTM.Channel
+}
 
-                }
-                elseif ($words[2] -eq "military")
-                {
-                    sudo systemctl start vrtMilitary.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
-                elseif ($words[2] -eq "local")
-                {
-                    sudo systemctl start vrtLocaly.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
-                elseif ($words[2] -eq "worldwar")
-                {
-                    sudo systemctl start vrtWorldWar.service
-                    Send-SlackMsg -Text "Attempting to $($words[1]) $($words[2]) service" -Channel $RTM.Channel
-                }
-            }
+
 }
 
 
@@ -354,10 +338,10 @@ Function Invoke-SlackBot {
                                 #$words = $words -split ' '
                                 
                                 Switch ($words){
-                                    {$words.StartsWith("service")} { Service-Action $words $RTM.Channel }
-                                    {$words.StartsWith("list")}    { IgnoreList-Action $words $RTM.Channel }
-                                    {$words.StartsWith("add")}     { IgnoreList-Action $words $RTM.Channel }
-                                    {$words.StartsWith("remove")}   { IgnoreList-Action $words $RTM.Channel }
+                                    {$words.StartsWith("service")} { Service-Action $words $RTM.Channel $parameter }
+                                    {$words.StartsWith("list")}    { IgnoreList-Action $words $RTM.Channel $parameter}
+                                    {$words.StartsWith("add")}     { IgnoreList-Action $words $RTM.Channel $parameter}
+                                    {$words.StartsWith("remove")}   { IgnoreList-Action $words $RTM.Channel $parameter}
                                 }
                         }
                         {$_.type -eq 'reconnect_url'} { $RTMSession.URL = $RTM.url }
@@ -368,11 +352,12 @@ Function Invoke-SlackBot {
             }   
         } Until (!$Conn)
 
-    }Finally{
+    }Catch{
 
         If ($WS) { 
             Write-Verbose "Closing websocket"
             $WS.Dispose()
+            Write-Host "oooops"
         }
 
     }
