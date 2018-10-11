@@ -254,7 +254,7 @@ function UpdateLocalIgnoreFile ($SendUpdateToSlack, $params, $action) {
             else {
                 #They do not match
                 Write-Host " Updating Local Ignore List" -ForegroundColor Green
-                $remoteIgnoreList | Sort-Object Value, ValueType | Export-Csv $LogsPath\$fileName -NoTypeInformation
+                $remoteIgnoreList | Sort-Object ValueType,Value | Export-Csv $LogsPath\$fileName -NoTypeInformation
                     if ($SendUpdateToSlack -ne "TRUE"){
                         return $remoteIgnoreList
                     }

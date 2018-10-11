@@ -120,7 +120,7 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
                 $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
                 $obj | Add-Member -MemberType NoteProperty -Name Comments -Value $comments
                 $list += $obj
-                $list | Sort-Object Value, ValueType| Export-Csv $importString -Force -NoTypeInformation
+                $list | Sort-Object ValueType, Value| Export-Csv $importString -Force -NoTypeInformation
                 $tot = $list.count
                 Send-SlackMsg -Text "Item Added, $tot Item(s) Now In Your Ignore list" -Channel $RTM.Channel
             }
@@ -137,7 +137,7 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
                 
             if ($listFind.count -eq 1 ) {
                 [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[2].ToUpper()}
-                $list | Sort-Object Value, ValueType | Export-Csv $importString -Force -NoTypeInformation
+                $list | Sort-Object ValueType, Value| Export-Csv $importString -Force -NoTypeInformation
                 $tot = $list.count
                 Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
             }
