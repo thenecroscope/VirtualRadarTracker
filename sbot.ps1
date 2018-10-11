@@ -135,14 +135,14 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
             [PSCustomObject[]]$list = Import-Csv $importString
             [PSCustomObject[]]$listFind = $list | Where-Object {$_.Value -eq ($words[2].ToUpper())}
                 
-            if ($listFind.count -eq 1 ) {
+            if ($listFind.count -ge 1 ) {
                 [PSCustomObject[]]$list = $list | Where-Object {$_.Value -ne $words[2].ToUpper()}
                 $list | Sort-Object ValueType, Value| Export-Csv $importString -Force -NoTypeInformation
                 $tot = $list.count
                 Send-SlackMsg -Text "*Item Removed, $tot Item(s) Now In Your Ignore list*" -Channel $RTM.Channel
             }
             else { #not in list
-                Write-Host "Cannnot Find Value, Unable To Remove"
+                Send-SlackMsg -Text "*Cannot Find Item In Your List*" -Channel $RTM.Channel
             }
         }
 
