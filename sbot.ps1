@@ -107,9 +107,14 @@ Function IgnoreList-Action  ($words, $channel, $slackApiKey) {
         elseif ($fullwords.StartsWith("add")) {
             if ($words[2] -eq "ICAO" -or $words[2] -eq "TYPE") {
                 $importString = "$LogsPath/$($words[1])_ignorelist.csv"
-                [PSCustomObject[]]$list = Import-Csv $importString
-
-                $comments = $words[4..99] -join " " #construct comments
+                try{
+                    [PSCustomObject[]]$list = Import-Csv $importString
+                }
+                catch{#File does not exist
+                }
+                $TextInfo = (Get-Culture).TextInfo
+                $commentslower = $words[4..99] -join " "
+                $comments = $TextInfo.ToTitleCase($commentslower)
                 $obj = New-Object -TypeName PSCustomObject
                 $obj | Add-Member -MemberType NoteProperty -Name ValueType -Value $words[2].ToUpper()
                 $obj | Add-Member -MemberType NoteProperty -Name Value -Value $words[3].ToUpper()
