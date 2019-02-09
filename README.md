@@ -96,3 +96,13 @@ military,https://onedrive.live.com/download?cid=XXXXXXXXXXXXXXXx&resid=XXXXXXXXX
 
 ## Updating to the latest version
 * Simply run ```sudo git pull``` from the folder were you installed the application
+
+
+## Config Vault
+
+vault server -dev
+set VAULT_ADDR=http://127.0.0.1:8200
+
+vault status
+
+vault kv put secret/hello foo=world
